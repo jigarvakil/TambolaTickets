@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -12,15 +12,261 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Blank ticket cell: light diagonal hatch. */
+.ticket-blank {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 4px,
+    rgb(15 23 42 / 0.12) 4px 5px
+  );
+}
+
+@media print {
+  body {
+    background: white;
+  }
+  .ticket {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+  .ticket-blank {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Typography for the static reference pages. */
+.prose-content h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+}
+.prose-content p,
+.prose-content li {
+  color: #334155;
+  line-height: 1.7;
+}
+.prose-content p + p {
+  margin-top: 0.75rem;
+}
+.prose-content ul,
+.prose-content ol {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+.prose-content ul {
+  list-style: disc;
+}
+.prose-content ol {
+  list-style: decimal;
+}
+.prose-content a {
+  color: #e11d48;
+  font-weight: 600;
+}
+.prose-content a:hover {
+  text-decoration: underline;
+}
+
+/* Number board: new number pops in big, then its cell pulses on landing. */
+@keyframes call-pop {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.call-pop {
+  animation: call-pop 450ms cubic-bezier(0.3, 0, 0.2, 1.4);
+}
+
+@keyframes board-land {
+  0% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.board-land {
+  animation: board-land 350ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .call-pop,
+  .board-land {
+    animation: none;
+  }
+}
+
+/* Custom confirm dialog: fade + rise in. */
+.confirm-dialog[open] {
+  animation: dialog-in 180ms ease-out;
+}
+.confirm-dialog[open]::backdrop {
+  animation: backdrop-in 180ms ease-out;
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Settings drawer slides in from the right. */
+.settings-drawer[open] {
+  animation: drawer-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.settings-drawer[open]::backdrop {
+  animation: backdrop-in 220ms ease-out;
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* Guided tour (driver.js) in the site's colors. */
+.driver-popover.tambola-tour {
+  border-radius: 14px;
+  padding: 18px 18px 14px;
+  max-width: 340px;
+  font-family: var(--font-sans), Arial, sans-serif;
+}
+.tambola-tour .driver-popover-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.tambola-tour .driver-popover-description {
+  color: #475569;
+  line-height: 1.55;
+}
+.tambola-tour .driver-popover-progress-text {
+  color: #94a3b8;
+}
+.tambola-tour .driver-popover-footer button {
+  text-shadow: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+}
+.tambola-tour .driver-popover-footer .driver-popover-next-btn {
+  background: #e11d48;
+  border-color: #e11d48;
+  color: #fff;
+}
+.tambola-tour .driver-popover-footer .driver-popover-next-btn:hover {
+  background: #be123c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-drawer[open],
+  .confirm-dialog[open] {
+    animation: none;
+  }
+}
+
+/* Splash loader: visible for 2s on every full page load, then fades out. */
+.splash {
+  animation: splash-out 350ms ease-in 2s forwards;
+}
+.splash-logo {
+  animation: splash-pop 600ms cubic-bezier(0.3, 0, 0.2, 1.5) both,
+    splash-float 1.4s ease-in-out 600ms infinite alternate;
+}
+.splash-bar {
+  animation: splash-fill 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes splash-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+@keyframes splash-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+@keyframes splash-float {
+  to {
+    transform: translateY(-10px) rotate(-1.5deg);
+  }
+}
+@keyframes splash-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-logo {
+    animation: none;
+  }
+}
+
+/* Ball machine: drum wobble, balls orbiting and bobbing in depth. */
+.drum-shake {
+  container-type: inline-size;
+  animation: drum-shake 220ms ease-in-out infinite alternate;
+}
+.drum-shake .drum-ball {
+  font-size: 7cqw;
+  animation: ball-bob ease-in-out infinite alternate;
+}
+.drum-orbit {
+  animation: drum-orbit linear infinite;
+}
+.drum-spokes {
+  animation: drum-orbit 0.9s linear infinite;
+}
+@keyframes drum-shake {
+  from {
+    transform: rotate(-1.5deg);
+  }
+  to {
+    transform: rotate(1.5deg);
+  }
+}
+@keyframes drum-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ball-bob {
+  from {
+    scale: 0.8;
+  }
+  to {
+    scale: 1.15;
+  }
 }
